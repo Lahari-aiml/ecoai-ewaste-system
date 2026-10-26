@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}My Pickup Requests – EcoAI Intelligent E-Waste Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">My Doorstep Pickup Requests</h2>
+            <p class="text-muted mb-0 small">
+                Track status updates from collection partners from dispatch to completion.
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('providers') }}" class="btn btn-eco-primary btn-sm">
+                <i class="bi bi-plus-lg me-1"></i> Book New Pickup
+            </a>
+        </div>
+    </div>
+
+    <!-- Status Roadmap Explanation -->
+    <div class="eco-card p-3 mb-4 shadow-sm bg-white">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 small">
+            <span class="fw-bold text-dark"><i class="bi bi-info-circle me-1 text-primary"></i> Lifecycle:</span>
+            <span class="status-badge status-pending"><i class="bi bi-clock"></i> Pending</span>
+            <i class="bi bi-arrow-right text-muted d-none d-sm-inline"></i>
+            <span class="status-badge status-confirmed"><i class="bi bi-check2"></i> Confirmed</span>
+            <i class="bi bi-arrow-right text-muted d-none d-sm-inline"></i>
+            <span class="status-badge status-picked-up"><i class="bi bi-truck"></i> Picked Up</span>
+            <i class="bi bi-arrow-right text-muted d-none d-sm-inline"></i>
+            <span class="status-badge status-completed"><i class="bi bi-check2-all"></i> Completed</span>
+        </div>
+    </div>
+
+    <!-- Requests Table / List -->
+    <div class="eco-card shadow-sm overflow-hidden">
+        <div class="eco-card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-card-checklist me-1 text-success"></i> Submitted Requests ({{ pickups|length }})</span>
+        </div>
+        <div class="eco-card-body p-0">
+            {% if pickups %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>Ref ID</th>
+                            <th>Partner & Category</th>
+                            <th>Item Description</th>
+                            <th>Scheduled Date</th>
+                            <th>Pickup Address</th>
+                            <th>Status</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in pickups %}
+                        <tr>
+                            <td class="small fw-bold text-muted">#REQ-{{ item.id }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ item.provider_name }}</div>
+                                <span class="badge-cat-{{ item.category_name|lower }}">
+                                    {{ item.category_name }}
+                                </span>
+                            </td>
+                            <td class="small text-secondary text-truncate" style="max-width: 180px;" title="{{ item.item_description or 'Direct provider pickup request' }}">
+                                {{ item.item_description or 'Direct provider pickup request' }}
+                            </td>
+                            <td class="small fw-semibold text-dark">
+                                <i class="bi bi-calendar-event me-1 text-muted"></i> {{ item.preferred_date }}
+                            </td>
+                            <td class="small text-secondary text-truncate" style="max-width: 200px;" title="{{ item.address }}">
+                                {{ item.address }}
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ item.status|lower|replace(' ', '-') }}">
+                                    {{ item.status }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                {% if item.status == 'Pending' %}
+                                <form method="POST" action="{{ url_for('cancel_pickup', request_id=item.id) }}" onsubmit="return confirm('Are you sure you want to cancel this pending pickup request?');" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" style="font-size:0.8rem;">
+                                        <i class="bi bi-x-circle me-1"></i> Cancel
+                                    </button>
+                                </form>
+                                {% else %}
+                                <span class="small text-muted fst-italic">Locked</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-truck fs-1 opacity-25"></i>
+                <h5 class="mt-2 mb-1">No Pickup Requests Yet</h5>
+                <p class="small text-muted mb-3">You have not scheduled any doorstep e-waste pickups.</p>
+                <a href="{{ url_for('providers') }}" class="btn btn-sm btn-eco-primary">
+                    Find Providers & Schedule Pickup
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

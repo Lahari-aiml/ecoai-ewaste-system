@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Pickup Request Management – EcoAI Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="text-decoration-none small">&larr; Admin Dashboard</a>
+            </div>
+            <h2 class="fw-bold mb-0 mt-1">Pickup Request Dispatch & Logistics</h2>
+        </div>
+        <div class="small text-muted">
+            Total Requests: <strong>{{ pickups|length }}</strong>
+        </div>
+    </div>
+
+    <!-- Status Filter Pills -->
+    <div class="d-flex flex-wrap gap-2 mb-4">
+        <a href="{{ url_for('admin_pickups') }}" class="btn btn-sm {% if not status_filter %}btn-dark{% else %}btn-outline-secondary{% endif %}">
+            All ({{ all_count }})
+        </a>
+        <a href="{{ url_for('admin_pickups', status='Pending') }}" class="btn btn-sm {% if status_filter == 'Pending' %}btn-warning text-dark{% else %}btn-outline-warning{% endif %}">
+            Pending ({{ pending_count }})
+        </a>
+        <a href="{{ url_for('admin_pickups', status='Confirmed') }}" class="btn btn-sm {% if status_filter == 'Confirmed' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+            Confirmed ({{ confirmed_count }})
+        </a>
+        <a href="{{ url_for('admin_pickups', status='Picked Up') }}" class="btn btn-sm {% if status_filter == 'Picked Up' %}btn-info{% else %}btn-outline-info{% endif %}">
+            Picked Up ({{ picked_up_count }})
+        </a>
+        <a href="{{ url_for('admin_pickups', status='Completed') }}" class="btn btn-sm {% if status_filter == 'Completed' %}btn-success{% else %}btn-outline-success{% endif %}">
+            Completed ({{ completed_count }})
+        </a>
+        <a href="{{ url_for('admin_pickups', status='Cancelled') }}" class="btn btn-sm {% if status_filter == 'Cancelled' %}btn-secondary{% else %}btn-outline-secondary{% endif %}">
+            Cancelled
+        </a>
+        <a href="{{ url_for('admin_pickups', status='Rejected') }}" class="btn btn-sm {% if status_filter == 'Rejected' %}btn-danger{% else %}btn-outline-danger{% endif %}">
+            Rejected
+        </a>
+    </div>
+
+    <!-- Pickups Table -->
+    <div class="eco-card shadow-sm overflow-hidden">
+        <div class="eco-card-header">
+            <i class="bi bi-truck me-1 text-danger"></i> Dispatch Manifest
+        </div>
+        <div class="eco-card-body p-0">
+            {% if pickups %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>Ref</th>
+                            <th>Citizen</th>
+                            <th>Partner Provider</th>
+                            <th>Item & Category</th>
+                            <th>Collection Date</th>
+                            <th>Address & Contact</th>
+                            <th>Status</th>
+                            <th class="text-end">Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in pickups %}
+                        <tr>
+                            <td class="small fw-bold text-muted">#REQ-{{ r.id }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ r.user_name }}</div>
+                                <small class="text-muted">{{ r.user_email }}</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">{{ r.provider_name }}</div>
+                                <small class="text-muted">{{ r.provider_city }}</small>
+                            </td>
+                            <td>
+                                <span class="badge-cat-{{ r.category_name|lower }} mb-1 d-inline-block">
+                                    {{ r.category_name }}
+                                </span>
+                                <div class="small text-truncate text-secondary" style="max-width: 150px;" title="{{ r.item_description or 'Direct provider request' }}">
+                                    {{ r.item_description or 'Direct request' }}
+                                </div>
+                            </td>
+                            <td class="small fw-semibold text-dark">
+                                <i class="bi bi-calendar-event me-1 text-muted"></i> {{ r.preferred_date }}
+                            </td>
+                            <td class="small" style="max-width: 220px;">
+                                <div class="text-truncate text-dark" title="{{ r.address }}">{{ r.address }}</div>
+                                <div class="text-primary fw-semibold"><i class="bi bi-telephone"></i> {{ r.phone }}</div>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ r.status|lower|replace(' ', '-') }}">
+                                    {{ r.status }}
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                {% if r.status in ['Pending', 'Confirmed', 'Picked Up'] %}
+                                <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" data-bs-toggle="modal" data-bs-target="#updateStatusModal{{ r.id }}">
+                                    <i class="bi bi-pencil-square me-1"></i> Update
+                                </button>
+
+                                <!-- Status Update Modal -->
+                                <div class="modal fade text-start" id="updateStatusModal{{ r.id }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content eco-card border-0">
+                                            <div class="modal-header border-bottom">
+                                                <h5 class="modal-title fw-bold">Update Request #REQ-{{ r.id }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <form method="POST" action="{{ url_for('admin_update_pickup_status', request_id=r.id) }}">
+                                                <div class="modal-body p-4">
+                                                    <div class="mb-3">
+                                                        <label class="form-label small text-muted">Current Status:</label>
+                                                        <div class="fw-bold">{{ r.status }}</div>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label small fw-bold">Select New Status <span class="text-danger">*</span></label>
+                                                        <select class="form-select" name="new_status" required>
+                                                            {% if r.status == 'Pending' %}
+                                                            <option value="Confirmed">Confirmed (Partner Dispatched)</option>
+                                                            <option value="Rejected">Rejected (Ineligible or unreachable)</option>
+                                                            <option value="Cancelled">Cancelled</option>
+                                                            {% elif r.status == 'Confirmed' %}
+                                                            <option value="Picked Up">Picked Up (Hardware in Transit)</option>
+                                                            <option value="Cancelled">Cancelled</option>
+                                                            {% elif r.status == 'Picked Up' %}
+                                                            <option value="Completed">Completed (Recovered & Processed)</option>
+                                                            {% endif %}
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="mb-3">
+                                                        <label class="form-label small fw-bold">Internal Status Note (Optional)</label>
+                                                        <input type="text" class="form-control" name="notes" placeholder="e.g. Dispatched vehicle KA-05-9922">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer border-top">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-eco-primary">Save Transition</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <span class="small text-muted fst-italic">Terminal State</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-5 text-center text-muted">
+                <i class="bi bi-truck fs-1 opacity-25"></i>
+                <p class="mt-2 mb-0">No pickup requests found for the selected status.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

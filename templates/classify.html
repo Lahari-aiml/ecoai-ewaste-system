@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Classify Electronic Waste – EcoAI Machine Learning{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Header Card -->
+            <div class="eco-card p-4 p-md-5 mb-4 shadow-sm">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="p-3 rounded-circle bg-success-subtle text-success">
+                        <i class="bi bi-cpu fs-2"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-1">AI E-Waste Classifier</h2>
+                        <p class="text-muted mb-0 small">Enter a natural language description to determine optimal circular disposition</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-light border small text-secondary mb-4 d-flex align-items-start gap-2">
+                    <i class="bi bi-lightbulb text-warning fs-5 mt-n1"></i>
+                    <div>
+                        <strong>Tips for highest AI accuracy:</strong> Mention the item type (laptop, smartphone, microwave, CRT), its operating state (boots, dead, screen broken, sparks), and whether parts or batteries are swollen or missing.
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ url_for('predict_classification') }}" id="classification-form">
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="item-description" class="form-label mb-0 fw-bold">
+                                Electronic Item Description <span class="text-danger">*</span>
+                            </label>
+                            <button type="button" class="btn btn-sm btn-outline-success border-dashed py-1 px-2" id="btn-try-sample" style="font-size: 0.8rem;">
+                                <i class="bi bi-shuffle me-1"></i> Try an Example
+                            </button>
+                        </div>
+                        <textarea class="form-control" id="item-description" name="description" rows="5" placeholder="e.g., My old laptop switches on, but its screen is damaged and has black flickering lines across the display..." required>{{ request.form.get('description', '') }}</textarea>
+                        <div class="form-text small text-muted">
+                            Natural language input processed through TF-IDF preprocessing and Deep Neural Network Softmax inference.
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 pt-2">
+                        <div class="small text-muted">
+                            <i class="bi bi-shield-lock me-1"></i> Categorization stored securely under your account.
+                        </div>
+                        <button type="submit" class="btn btn-eco-primary btn-lg px-4" id="btn-submit-classify">
+                            <i class="bi bi-magic me-1"></i> Analyze & Classify
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Quick Guidelines -->
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <div class="eco-card p-3 h-100">
+                        <h6 class="fw-bold text-primary mb-1"><i class="bi bi-tools me-1"></i> Repair</h6>
+                        <small class="text-muted">Cracked screens, dying batteries, sticking keys, loose audio or charging jacks.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="eco-card p-3 h-100">
+                        <h6 class="fw-bold text-success mb-1"><i class="bi bi-arrow-repeat me-1"></i> Reuse</h6>
+                        <small class="text-muted">Working gadgets, outdated computers ready for donation, working tablets or printers.</small>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="eco-card p-3 h-100">
+                        <h6 class="fw-bold text-danger mb-1"><i class="bi bi-recycle me-1"></i> Recycle</h6>
+                        <small class="text-muted">Burnt motherboards, shattered CRTs, swollen chemical batteries, crushed devices.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

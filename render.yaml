@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: ecoai-ewaste-system
+    env: python
+    buildCommand: pip install -r requirements.txt && python database/seed.py && python model/train_model.py
+    startCommand: python server_production.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 10000

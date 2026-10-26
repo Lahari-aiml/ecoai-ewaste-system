@@ -1,0 +1,437 @@
+/* ==========================================================================
+   EcoAI – Intelligent E-Waste Management System
+   Theme: Environmental Forest Green, Emerald, Muted Sage & Warm Neutrals
+   ========================================================================== */
+
+:root {
+  --eco-forest-dark: #0f3822;
+  --eco-forest: #165b37;
+  --eco-emerald: #10b981;
+  --eco-emerald-dark: #059669;
+  --eco-sage-light: #ecfdf5;
+  --eco-sage-border: #a7f3d0;
+  --eco-slate: #0f172a;
+  --eco-muted: #64748b;
+  --eco-bg: #f8fafc;
+  --eco-card-bg: #ffffff;
+  --eco-shadow-sm: 0 2px 4px rgba(15, 23, 42, 0.05);
+  --eco-shadow-md: 0 4px 14px rgba(22, 91, 55, 0.08);
+  --eco-shadow-lg: 0 10px 25px rgba(22, 91, 55, 0.12);
+  --eco-radius: 14px;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--eco-bg);
+  color: #1e293b;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Enhancements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--eco-slate);
+  letter-spacing: -0.02em;
+}
+
+a {
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+/* ==========================================================================
+   Navigation Bar
+   ========================================================================== */
+.eco-navbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(16, 185, 129, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  padding: 0.85rem 1rem;
+}
+
+.eco-brand {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--eco-forest-dark) !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.eco-brand i {
+  color: var(--eco-emerald);
+  font-size: 1.5rem;
+}
+
+.eco-nav-link {
+  font-weight: 600;
+  color: #475569 !important;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.eco-nav-link:hover, .eco-nav-link.active {
+  color: var(--eco-forest-dark) !important;
+  background-color: var(--eco-sage-light);
+}
+
+.eco-nav-link.admin-badge {
+  background-color: #fef2f2;
+  color: #991b1b !important;
+  border: 1px solid #fecaca;
+}
+
+/* ==========================================================================
+   Hero Section & Landing Elements
+   ========================================================================== */
+.eco-hero {
+  background: linear-gradient(135deg, #092e1b 0%, #165b37 55%, #10b981 100%);
+  color: #ffffff;
+  padding: 5.5rem 1rem 5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.eco-hero::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.eco-hero-title {
+  font-size: 2.85rem;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #ffffff;
+  margin-bottom: 1.25rem;
+}
+
+.eco-hero-subtitle {
+  font-size: 1.15rem;
+  color: #d1fae5;
+  margin-bottom: 2rem;
+  max-width: 650px;
+}
+
+.eco-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  color: #a7f3d0;
+  padding: 0.35rem 0.9rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+/* ==========================================================================
+   Buttons & Micro-Interactions
+   ========================================================================== */
+.btn-eco-primary {
+  background: var(--eco-emerald-dark);
+  color: #ffffff;
+  font-weight: 600;
+  border: none;
+  padding: 0.65rem 1.4rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3);
+  transition: all 0.25s ease;
+}
+
+.btn-eco-primary:hover {
+  background: var(--eco-forest);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.4);
+}
+
+.btn-eco-outline {
+  border: 2px solid var(--eco-emerald);
+  color: var(--eco-forest-dark);
+  font-weight: 600;
+  padding: 0.6rem 1.3rem;
+  border-radius: 10px;
+  background: transparent;
+  transition: all 0.25s ease;
+}
+
+.btn-eco-outline:hover {
+  background: var(--eco-sage-light);
+  color: var(--eco-forest-dark);
+  border-color: var(--eco-emerald-dark);
+  transform: translateY(-2px);
+}
+
+.btn-eco-light {
+  background: #ffffff;
+  color: var(--eco-forest-dark);
+  font-weight: 700;
+  padding: 0.65rem 1.4rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+  transition: all 0.25s ease;
+}
+
+.btn-eco-light:hover {
+  background: #f1f5f9;
+  color: var(--eco-forest-dark);
+  transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   Cards & Layout Components
+   ========================================================================== */
+.eco-card {
+  background: var(--eco-card-bg);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  border-radius: var(--eco-radius);
+  box-shadow: var(--eco-shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+}
+
+.eco-card:hover {
+  box-shadow: var(--eco-shadow-md);
+}
+
+.eco-card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--eco-shadow-lg);
+}
+
+.eco-card-header {
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border-bottom: 1px solid #f1f5f9;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.eco-card-body {
+  padding: 1.5rem;
+}
+
+/* Feature Pillars */
+.pillar-card {
+  height: 100%;
+  border-radius: var(--eco-radius);
+  padding: 2rem 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  transition: all 0.3s ease;
+}
+
+.pillar-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--eco-shadow-lg);
+}
+
+.pillar-repair:hover { border-color: #93c5fd; }
+.pillar-reuse:hover { border-color: #86efac; }
+.pillar-recycle:hover { border-color: #fca5a5; }
+
+.pillar-icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.pillar-repair .pillar-icon { background: #eff6ff; color: #2563eb; }
+.pillar-reuse .pillar-icon { background: #ecfdf5; color: #059669; }
+.pillar-recycle .pillar-icon { background: #fef2f2; color: #dc2626; }
+
+/* Category Pills & Badges */
+.badge-cat-repair {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+}
+
+.badge-cat-reuse {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+}
+
+.badge-cat-recycle {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  font-weight: 700;
+  padding: 0.35rem 0.85rem;
+  border-radius: 50px;
+}
+
+/* Pickup Status Badges */
+.status-badge {
+  font-weight: 700;
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 50px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.status-pending { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
+.status-confirmed { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.status-picked-up { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+.status-completed { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+.status-cancelled { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+.status-rejected { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+
+/* ==========================================================================
+   AI Classification Result Card
+   ========================================================================== */
+.result-hero-box {
+  border-radius: var(--eco-radius);
+  padding: 2.25rem 2rem;
+  margin-bottom: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.result-box-repair {
+  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  color: #ffffff;
+}
+
+.result-box-reuse {
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
+  color: #ffffff;
+}
+
+.result-box-recycle {
+  background: linear-gradient(135deg, #991b1b 0%, #ef4444 100%);
+  color: #ffffff;
+}
+
+.confidence-meter {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: #ffffff;
+  border-radius: 10px;
+  transition: width 1s ease-in-out;
+}
+
+/* ==========================================================================
+   Map & Service Providers
+   ========================================================================== */
+#map {
+  width: 100%;
+  height: 480px;
+  border-radius: var(--eco-radius);
+  border: 1px solid #cbd5e1;
+  box-shadow: var(--eco-shadow-sm);
+  z-index: 1;
+}
+
+.provider-item {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.provider-item:hover {
+  border-color: var(--eco-emerald);
+  box-shadow: var(--eco-shadow-md);
+  transform: translateX(4px);
+}
+
+.provider-item.active-provider {
+  border-color: var(--eco-emerald-dark);
+  background: #f0fdf4;
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+.form-control, .form-select {
+  border-radius: 10px;
+  padding: 0.65rem 0.95rem;
+  border: 1.5px solid #cbd5e1;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: var(--eco-emerald);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+.form-label {
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.eco-footer {
+  margin-top: auto;
+  background: #092e1b;
+  color: #94a3b8;
+  padding: 3rem 1rem 1.5rem;
+  border-top: 1px solid rgba(16, 185, 129, 0.15);
+}
+
+.eco-footer a {
+  color: #a7f3d0;
+}
+
+.eco-footer a:hover {
+  color: #ffffff;
+}
+
+/* Steps Progress Indicator */
+.step-number {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--eco-sage-light);
+  color: var(--eco-forest);
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  border: 2px solid var(--eco-sage-border);
+}

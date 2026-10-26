@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Sign In – EcoAI Security Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="eco-card p-4 p-md-5 shadow-sm border-danger-subtle">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-3 rounded-circle bg-danger-subtle text-danger mb-3">
+                        <i class="bi bi-shield-lock fs-2"></i>
+                    </div>
+                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 rounded-pill small mb-2 d-inline-block">Restricted Access</span>
+                    <h3 class="fw-bold mb-1">Admin Portal</h3>
+                    <p class="text-muted small">Academic Evaluators & System Administrators Only</p>
+                </div>
+
+                <div class="alert alert-warning py-2 small mb-4">
+                    <i class="bi bi-info-circle-fill me-1"></i> Default academic demo admin credentials: <strong>admin</strong> / <strong>Admin@EcoAI2026</strong>
+                </div>
+
+                <form method="POST" action="{{ url_for('admin_login') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Admin Username or Email <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="username" name="username" placeholder="admin" required value="{{ request.form.get('username', '') }}">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label">Admin Password <span class="text-danger">*</span></label>
+                        <input type="password" class="form-control" id="password" name="password" placeholder="••••••••••••" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 py-2 fs-6 mb-3">
+                        <i class="bi bi-shield-check me-1"></i> Authenticate Administrator
+                    </button>
+                </form>
+
+                <div class="text-center small text-muted pt-2 border-top">
+                    Return to <a href="{{ url_for('login') }}" class="text-success fw-semibold">Standard User Login</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

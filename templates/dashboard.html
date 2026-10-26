@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard – EcoAI Intelligent E-Waste Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header Greeting & CTA -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Hello, {{ session.get('user_name', 'Eco User') }}! 👋</h2>
+            <p class="text-muted mb-0 small">Welcome to your personal e-waste circular disposition dashboard.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('classify') }}" class="btn btn-eco-primary">
+                <i class="bi bi-cpu me-1"></i> Classify New Item
+            </a>
+            <a href="{{ url_for('providers') }}" class="btn btn-eco-outline">
+                <i class="bi bi-geo-alt me-1"></i> Nearby Providers
+            </a>
+        </div>
+    </div>
+
+    <!-- Metric Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="eco-card p-3 d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3 bg-primary-subtle text-primary">
+                    <i class="bi bi-cpu fs-2"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-semibold">Total Classifications</div>
+                    <div class="display-6 fw-bold text-dark">{{ total_classifications }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="eco-card p-3 d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3 bg-warning-subtle text-warning">
+                    <i class="bi bi-truck fs-2"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-semibold">Active Pickups</div>
+                    <div class="display-6 fw-bold text-dark">{{ active_pickups_count }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="eco-card p-3 d-flex align-items-center gap-3">
+                <div class="rounded-3 p-3 bg-success-subtle text-success">
+                    <i class="bi bi-check2-circle fs-2"></i>
+                </div>
+                <div>
+                    <div class="text-muted small fw-semibold">Completed Pickups</div>
+                    <div class="display-6 fw-bold text-dark">{{ completed_pickups_count }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Recent Classifications -->
+        <div class="col-lg-7">
+            <div class="eco-card h-100">
+                <div class="eco-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-clock-history me-1 text-primary"></i> Recent Classifications</span>
+                    <a href="{{ url_for('history') }}" class="small text-decoration-none">View All &rarr;</a>
+                </div>
+                <div class="eco-card-body p-0">
+                    {% if recent_predictions %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light small">
+                                <tr>
+                                    <th>Description</th>
+                                    <th>Category</th>
+                                    <th>Confidence</th>
+                                    <th>Date</th>
+                                    <th class="text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in recent_predictions %}
+                                <tr>
+                                    <td class="fw-medium text-truncate" style="max-width: 200px;" title="{{ item.input_text }}">
+                                        {{ item.input_text }}
+                                    </td>
+                                    <td>
+                                        <span class="badge-cat-{{ item.category_name|lower }}">
+                                            {{ item.category_name }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="small fw-semibold text-muted">
+                                            {{ (item.confidence_score * 100)|round(1) }}%
+                                        </div>
+                                    </td>
+                                    <td class="small text-muted">
+                                        {{ item.created_at[:10] }}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{{ url_for('view_result', prediction_id=item.id) }}" class="btn btn-sm btn-outline-primary py-1 px-2" title="View Recommendation">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-cpu fs-1 opacity-25"></i>
+                        <p class="mt-2 mb-3">You haven't classified any electronic items yet.</p>
+                        <a href="{{ url_for('classify') }}" class="btn btn-sm btn-eco-primary">Classify Your First Item</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Pickup Requests -->
+        <div class="col-lg-5">
+            <div class="eco-card h-100">
+                <div class="eco-card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-truck me-1 text-warning"></i> Active Pickup Requests</span>
+                    <a href="{{ url_for('my_pickups') }}" class="small text-decoration-none">View All &rarr;</a>
+                </div>
+                <div class="eco-card-body p-0">
+                    {% if active_pickups %}
+                    <div class="list-group list-group-flush">
+                        {% for req in active_pickups %}
+                        <div class="list-group-item p-3">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold mb-0 text-dark">{{ req.provider_name }}</h6>
+                                <span class="status-badge status-{{ req.status|lower|replace(' ', '-') }}">
+                                    {{ req.status }}
+                                </span>
+                            </div>
+                            <div class="small text-muted mb-1">
+                                <i class="bi bi-calendar-event me-1"></i> Preferred: <strong>{{ req.preferred_date }}</strong>
+                            </div>
+                            <div class="small text-secondary text-truncate mb-2" title="{{ req.address }}">
+                                <i class="bi bi-geo-alt me-1"></i> {{ req.address }}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center pt-1 border-top">
+                                <span class="badge-cat-{{ req.category_name|lower }}">
+                                    {{ req.category_name }}
+                                </span>
+                                {% if req.status == 'Pending' %}
+                                <form method="POST" action="{{ url_for('cancel_pickup', request_id=req.id) }}" onsubmit="return confirm('Cancel this pickup request?');" style="display:inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" style="font-size:0.75rem;">
+                                        Cancel
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5 text-muted">
+                        <i class="bi bi-truck fs-1 opacity-25"></i>
+                        <p class="mt-2 mb-0">No active pickup requests right now.</p>
+                        <small class="text-secondary">Classify an item and schedule doorstep collection.</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

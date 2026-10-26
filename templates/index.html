@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block title %}EcoAI – Intelligent E-Waste Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="eco-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="eco-hero-badge">
+                    <i class="bi bi-stars"></i> Powered by NLP & Deep Learning
+                </div>
+                <h1 class="eco-hero-title">
+                    Intelligent E-Waste Classification & Circular Life Management
+                </h1>
+                <p class="eco-hero-subtitle">
+                    Transforming how discarded electronics are handled. Describe any electronic device in plain English, and our dual AI models immediately categorize it into <strong>Repair</strong>, <strong>Reuse</strong>, or <strong>Recycle</strong>—connecting you directly with verified nearby service providers and doorstep pickup.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{{ url_for('classify') }}" class="btn btn-eco-light btn-lg">
+                        <i class="bi bi-cpu me-2 text-success"></i> Classify E-Waste Now
+                    </a>
+                    <a href="{{ url_for('signup') }}" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-person-plus me-2"></i> Get Started
+                    </a>
+                    <a href="{{ url_for('providers') }}" class="btn btn-link text-white text-decoration-none d-flex align-items-center">
+                        <i class="bi bi-geo-alt me-1 text-warning"></i> Explore Service Map &rarr;
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+                <div class="p-4 rounded-4" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(12px);">
+                    <i class="bi bi-motherboard text-light" style="font-size: 5rem; opacity: 0.9;"></i>
+                    <h5 class="text-white mt-3 fw-bold">Circular Technology</h5>
+                    <p class="text-white-50 small mb-0">Decoupling electronics usage from environmental devastation through intelligent categorization.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Three Core Pillars -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill fw-bold text-uppercase">The 3R Disposition Framework</span>
+            <h2 class="mt-2 fw-bold">Intelligent Three-Tier Categorization</h2>
+            <p class="text-muted mx-auto" style="max-width: 650px;">
+                Our AI model evaluates hardware degradation, component reparability, and economic viability to assign the most eco-friendly pathway.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Repair -->
+            <div class="col-md-4">
+                <div class="pillar-card pillar-repair shadow-sm">
+                    <div class="pillar-icon">
+                        <i class="bi bi-tools"></i>
+                    </div>
+                    <span class="badge-cat-repair mb-2 d-inline-block">Tier 1: Restore</span>
+                    <h4 class="fw-bold mt-2">Repair</h4>
+                    <p class="text-muted small">
+                        Devices with minor hardware or software issues—such as cracked screens, loose charging sockets, worn batteries, or broken hinges—that can be economically serviced.
+                    </p>
+                    <hr class="my-3 opacity-25">
+                    <div class="small fw-semibold text-secondary">
+                        <i class="bi bi-check2-circle text-primary me-1"></i> Extends hardware lifecycle
+                    </div>
+                    <div class="small fw-semibold text-secondary mt-1">
+                        <i class="bi bi-check2-circle text-primary me-1"></i> Authorized technician matching
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reuse -->
+            <div class="col-md-4">
+                <div class="pillar-card pillar-reuse shadow-sm">
+                    <div class="pillar-icon">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <span class="badge-cat-reuse mb-2 d-inline-block">Tier 2: Repurpose</span>
+                    <h4 class="fw-bold mt-2">Reuse</h4>
+                    <p class="text-muted small">
+                        Working, functional, or lightly used gadgets that are replaced or no longer needed. Suitable for donation to schools, NGOs, student use, or verified resale.
+                    </p>
+                    <hr class="my-3 opacity-25">
+                    <div class="small fw-semibold text-secondary">
+                        <i class="bi bi-check2-circle text-success me-1"></i> Cryptographic data sanitization
+                    </div>
+                    <div class="small fw-semibold text-secondary mt-1">
+                        <i class="bi bi-check2-circle text-success me-1"></i> Refurbishment & donation hubs
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recycle -->
+            <div class="col-md-4">
+                <div class="pillar-card pillar-recycle shadow-sm">
+                    <div class="pillar-icon">
+                        <i class="bi bi-recycle"></i>
+                    </div>
+                    <span class="badge-cat-recycle mb-2 d-inline-block">Tier 3: Recover</span>
+                    <h4 class="fw-bold mt-2">Recycle</h4>
+                    <p class="text-muted small">
+                        Obsolete, burnt, shattered, corroded, or chemically hazardous electronics that must be diverted from landfills to R2/e-Stewards certified recovery facilities.
+                    </p>
+                    <hr class="my-3 opacity-25">
+                    <div class="small fw-semibold text-secondary">
+                        <i class="bi bi-check2-circle text-danger me-1"></i> Safe battery & toxin extraction
+                    </div>
+                    <div class="small fw-semibold text-secondary mt-1">
+                        <i class="bi bi-check2-circle text-danger me-1"></i> Precious metals smelting & recovery
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container py-4">
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 rounded-pill fw-bold text-uppercase">End-to-End Workflow</span>
+            <h2 class="mt-2 fw-bold">How EcoAI Works</h2>
+            <p class="text-muted mx-auto" style="max-width: 650px;">
+                From natural language description to certified doorstep pickup in five seamless steps.
+            </p>
+        </div>
+
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-2 col-md-4 col-sm-6 text-center">
+                <div class="step-number mx-auto">1</div>
+                <h6 class="fw-bold">Describe Item</h6>
+                <p class="text-muted small">Type simple details about the gadget, brand, and observed faults.</p>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 text-center">
+                <div class="step-number mx-auto">2</div>
+                <h6 class="fw-bold">AI Classification</h6>
+                <p class="text-muted small">TF-IDF NLP + Deep Neural Network analyze your description.</p>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 text-center">
+                <div class="step-number mx-auto">3</div>
+                <h6 class="fw-bold">Recommendation</h6>
+                <p class="text-muted small">Receive actionable instructions and safety precautions.</p>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 text-center">
+                <div class="step-number mx-auto">4</div>
+                <h6 class="fw-bold">Locate Services</h6>
+                <p class="text-muted small">Leaflet map locates the nearest verified providers via Haversine formula.</p>
+            </div>
+            <div class="col-lg-2 col-md-4 col-sm-6 text-center">
+                <div class="step-number mx-auto">5</div>
+                <h6 class="fw-bold">Doorstep Pickup</h6>
+                <p class="text-muted small">Schedule a convenient collection date and track request status.</p>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{{ url_for('classify') }}" class="btn btn-eco-primary btn-lg px-4">
+                <i class="bi bi-lightning-charge me-1"></i> Try Classification Now
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Environmental Impact Statistics (Real Database Backed) -->
+<section class="py-5">
+    <div class="container py-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-5">
+                <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 rounded-pill fw-bold text-uppercase">Platform Telemetry</span>
+                <h2 class="fw-bold mt-2">Real-Time Ecological Footprint</h2>
+                <p class="text-muted">
+                    Every device processed through EcoAI prevents toxic heavy metals (lead, cadmium, mercury) from contaminating groundwater while preserving vital rare-earth elements.
+                </p>
+                <div class="d-flex align-items-center gap-3 mt-4">
+                    <div class="p-3 bg-white rounded-3 shadow-sm border">
+                        <i class="bi bi-shield-check text-success fs-3"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold text-dark">Verified Database Transparency</div>
+                        <div class="small text-muted">Statistics generated directly from live SQLite database records.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div class="eco-card p-4 text-center">
+                            <div class="display-5 fw-bold text-success mb-1">{{ stats.total_predictions }}</div>
+                            <div class="fw-bold text-dark">Classifications Processed</div>
+                            <small class="text-muted">AI-driven disposals</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="eco-card p-4 text-center">
+                            <div class="display-5 fw-bold text-primary mb-1">{{ stats.total_providers }}</div>
+                            <div class="fw-bold text-dark">Service Providers</div>
+                            <small class="text-muted">Repair, reuse & recycling hubs</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="eco-card p-4 text-center">
+                            <div class="display-5 fw-bold text-info mb-1">{{ stats.total_users }}</div>
+                            <div class="fw-bold text-dark">Registered Users</div>
+                            <small class="text-muted">Active eco-citizens</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="eco-card p-4 text-center">
+                            <div class="display-5 fw-bold text-warning mb-1">{{ stats.completed_pickups }}</div>
+                            <div class="fw-bold text-dark">Completed Pickups</div>
+                            <small class="text-muted">Diverted from municipal landfills</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action Banner -->
+<section class="py-5 bg-white border-top">
+    <div class="container text-center py-3">
+        <h3 class="fw-bold">Ready to responsibly handle your unwanted electronics?</h3>
+        <p class="text-muted mx-auto mb-4" style="max-width: 600px;">
+            Join our initiative to eliminate hazardous electronic waste through transparent AI classification.
+        </p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('classify') }}" class="btn btn-eco-primary btn-lg">
+                <i class="bi bi-cpu me-2"></i> Classify an Item
+            </a>
+            <a href="{{ url_for('signup') }}" class="btn btn-eco-outline btn-lg">
+                Create Free Account
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

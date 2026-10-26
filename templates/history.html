@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Prediction History – EcoAI Intelligent E-Waste Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">My Classification History</h2>
+            <p class="text-muted mb-0 small">
+                Archived AI predictions and disposition recommendations processed for your account.
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('classify') }}" class="btn btn-eco-primary btn-sm">
+                <i class="bi bi-cpu me-1"></i> Classify New Item
+            </a>
+        </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="eco-card shadow-sm overflow-hidden">
+        <div class="eco-card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-clock-history me-1 text-primary"></i> Total Classifications: {{ history|length }}</span>
+        </div>
+        <div class="eco-card-body p-0">
+            {% if history %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>#</th>
+                            <th>Electronic Item Description</th>
+                            <th>Predicted Category</th>
+                            <th>Confidence</th>
+                            <th>Date & Time</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in history %}
+                        <tr>
+                            <td class="small fw-bold text-muted">{{ loop.index }}</td>
+                            <td class="fw-medium text-dark" style="max-width: 320px;">
+                                <div class="text-truncate" title="{{ item.input_text }}">
+                                    "{{ item.input_text }}"
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge-cat-{{ item.category_name|lower }}">
+                                    {{ item.category_name }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="small fw-semibold text-dark">
+                                    {{ (item.confidence_score * 100)|round(1) }}%
+                                </div>
+                                <div class="confidence-meter" style="width: 70px; height: 4px; background: #e2e8f0;">
+                                    <div class="confidence-fill bg-success" style="width: {{ (item.confidence_score * 100)|round(1) }}%;"></div>
+                                </div>
+                            </td>
+                            <td class="small text-muted">
+                                {{ item.created_at }}
+                            </td>
+                            <td class="text-end">
+                                <a href="{{ url_for('view_result', prediction_id=item.id) }}" class="btn btn-sm btn-outline-primary py-1 px-2 me-1" title="View Full Result & Recommendation">
+                                    <i class="bi bi-eye"></i> Result
+                                </a>
+                                <a href="{{ url_for('providers', category_id=item.predicted_category_id, prediction_id=item.id) }}" class="btn btn-sm btn-outline-success py-1 px-2" title="Find Providers">
+                                    <i class="bi bi-geo-alt"></i> Providers
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-5 text-muted">
+                <i class="bi bi-cpu fs-1 opacity-25"></i>
+                <h5 class="mt-2 mb-1">No Classification History</h5>
+                <p class="small text-muted mb-3">You haven't submitted any electronic item descriptions yet.</p>
+                <a href="{{ url_for('classify') }}" class="btn btn-sm btn-eco-primary">
+                    Classify an Electronic Item Now
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

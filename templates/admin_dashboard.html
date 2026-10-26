@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard – EcoAI Command Center{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1 small">Admin Control Panel</span>
+                <span class="text-muted small">B.Tech CSE–AI/ML Project</span>
+            </div>
+            <h2 class="fw-bold mb-0 mt-1">System Administration & Oversight</h2>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin_users') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-people me-1"></i> Users
+            </a>
+            <a href="{{ url_for('admin_providers') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-building me-1"></i> Providers
+            </a>
+            <a href="{{ url_for('admin_pickups') }}" class="btn btn-danger btn-sm">
+                <i class="bi bi-truck me-1"></i> Pickup Requests
+            </a>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards -->
+    <div class="row g-3 mb-4">
+        <!-- Users -->
+        <div class="col-sm-6 col-lg">
+            <div class="eco-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-muted text-uppercase">Registered Users</span>
+                    <span class="badge bg-info-subtle text-info"><i class="bi bi-people"></i></span>
+                </div>
+                <div class="display-6 fw-bold text-dark">{{ stats.total_users }}</div>
+                <a href="{{ url_for('admin_users') }}" class="small text-decoration-none mt-2 d-inline-block">Manage Users &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Predictions -->
+        <div class="col-sm-6 col-lg">
+            <div class="eco-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-muted text-uppercase">Total Predictions</span>
+                    <span class="badge bg-primary-subtle text-primary"><i class="bi bi-cpu"></i></span>
+                </div>
+                <div class="display-6 fw-bold text-dark">{{ stats.total_predictions }}</div>
+                <a href="{{ url_for('admin_predictions') }}" class="small text-decoration-none mt-2 d-inline-block">View Classifications &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Providers -->
+        <div class="col-sm-6 col-lg">
+            <div class="eco-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-muted text-uppercase">Service Providers</span>
+                    <span class="badge bg-success-subtle text-success"><i class="bi bi-building"></i></span>
+                </div>
+                <div class="display-6 fw-bold text-dark">{{ stats.total_providers }}</div>
+                <a href="{{ url_for('admin_providers') }}" class="small text-decoration-none mt-2 d-inline-block">Manage Directory &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Pending Pickups -->
+        <div class="col-sm-6 col-lg">
+            <div class="eco-card p-3 h-100 border-warning-subtle">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-warning text-uppercase">Pending Pickups</span>
+                    <span class="badge bg-warning-subtle text-warning"><i class="bi bi-clock-history"></i></span>
+                </div>
+                <div class="display-6 fw-bold text-warning">{{ stats.pending_pickups }}</div>
+                <a href="{{ url_for('admin_pickups', status='Pending') }}" class="small text-decoration-none mt-2 d-inline-block text-warning fw-semibold">Action Required &rarr;</a>
+            </div>
+        </div>
+
+        <!-- Completed Pickups -->
+        <div class="col-sm-6 col-lg">
+            <div class="eco-card p-3 h-100 border-success-subtle">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="small fw-bold text-success text-uppercase">Completed Pickups</span>
+                    <span class="badge bg-success-subtle text-success"><i class="bi bi-check2-all"></i></span>
+                </div>
+                <div class="display-6 fw-bold text-success">{{ stats.completed_pickups }}</div>
+                <a href="{{ url_for('admin_pickups', status='Completed') }}" class="small text-decoration-none mt-2 d-inline-block text-success fw-semibold">View Archive &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Management Quick Grid -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="eco-card p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-people text-info fs-4"></i>
+                        <h5 class="fw-bold mb-0">User Accounts</h5>
+                    </div>
+                    <p class="text-muted small">Inspect registered student/citizen accounts, toggle active status, and audit access.</p>
+                </div>
+                <a href="{{ url_for('admin_users') }}" class="btn btn-sm btn-outline-secondary w-100">Manage Users</a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="eco-card p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-cpu text-primary fs-4"></i>
+                        <h5 class="fw-bold mb-0">Predictions</h5>
+                    </div>
+                    <p class="text-muted small">Examine AI classification logs, NLP vs DL probabilities, and search by query.</p>
+                </div>
+                <a href="{{ url_for('admin_predictions') }}" class="btn btn-sm btn-outline-secondary w-100">Review Predictions</a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="eco-card p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-sliders text-success fs-4"></i>
+                        <h5 class="fw-bold mb-0">Categories & Text</h5>
+                    </div>
+                    <p class="text-muted small">Update 3R category descriptions, actionable steps, and safety advisories.</p>
+                </div>
+                <a href="{{ url_for('admin_categories') }}" class="btn btn-sm btn-outline-secondary w-100">Edit Recommendations</a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="eco-card p-3 h-100 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <i class="bi bi-building text-warning fs-4"></i>
+                        <h5 class="fw-bold mb-0">Service Providers</h5>
+                    </div>
+                    <p class="text-muted small">Add verified recycling partners, update lat/lon coordinates, and manage demo flags.</p>
+                </div>
+                <a href="{{ url_for('admin_providers') }}" class="btn btn-sm btn-outline-secondary w-100">Manage Directory</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent System Predictions Stream -->
+    <div class="eco-card shadow-sm">
+        <div class="eco-card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-activity text-danger me-1"></i> Recent System Classifications</span>
+            <a href="{{ url_for('admin_predictions') }}" class="small text-decoration-none">View All &rarr;</a>
+        </div>
+        <div class="eco-card-body p-0">
+            {% if recent_predictions %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>User</th>
+                            <th>Item Description</th>
+                            <th>Category</th>
+                            <th>Confidence</th>
+                            <th>Model</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in recent_predictions %}
+                        <tr>
+                            <td class="small fw-bold text-dark">{{ p.user_name }}</td>
+                            <td class="small text-truncate" style="max-width: 250px;" title="{{ p.input_text }}">
+                                "{{ p.input_text }}"
+                            </td>
+                            <td>
+                                <span class="badge-cat-{{ p.category_name|lower }}">
+                                    {{ p.category_name }}
+                                </span>
+                            </td>
+                            <td class="small fw-semibold">{{ (p.confidence_score * 100)|round(1) }}%</td>
+                            <td class="small text-muted">{{ p.model_used }}</td>
+                            <td class="small text-muted">{{ p.created_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-4 text-center text-muted">No classifications recorded yet.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

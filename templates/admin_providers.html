@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Service Provider Directory – EcoAI Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="text-decoration-none small">&larr; Admin Dashboard</a>
+            </div>
+            <h2 class="fw-bold mb-0 mt-1">Service Provider Directory</h2>
+        </div>
+        <div>
+            <button type="button" class="btn btn-eco-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addProviderModal">
+                <i class="bi bi-plus-lg me-1"></i> Add Service Provider
+            </button>
+        </div>
+    </div>
+
+    <!-- Provider Directory Table -->
+    <div class="eco-card shadow-sm overflow-hidden mb-4">
+        <div class="eco-card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-building me-1 text-success"></i> Registered Providers ({{ providers|length }})</span>
+            <span class="small text-muted">Demo records clearly identified for transparency</span>
+        </div>
+        <div class="eco-card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light small">
+                        <tr>
+                            <th>ID</th>
+                            <th>Partner Name</th>
+                            <th>Category</th>
+                            <th>City & Coordinates</th>
+                            <th>Phone / Contact</th>
+                            <th>Pickup</th>
+                            <th>Status</th>
+                            <th>Verification</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in providers %}
+                        <tr>
+                            <td class="small fw-bold text-muted">#{{ p.id }}</td>
+                            <td>
+                                <div class="fw-bold text-dark">{{ p.name }}</div>
+                                <small class="text-muted text-truncate d-block" style="max-width: 180px;" title="{{ p.address }}">
+                                    {{ p.address }}
+                                </small>
+                            </td>
+                            <td>
+                                <span class="badge-cat-{{ p.category_name|lower }}">
+                                    {{ p.category_name }}
+                                </span>
+                            </td>
+                            <td class="small">
+                                <div class="fw-semibold text-dark">{{ p.city }}</div>
+                                <small class="text-muted">Lat: {{ p.latitude|round(4) }}, Lon: {{ p.longitude|round(4) }}</small>
+                            </td>
+                            <td class="small">
+                                <div class="text-primary fw-semibold">{{ p.phone }}</div>
+                                <small class="text-muted">{{ p.email or 'No email' }}</small>
+                            </td>
+                            <td>
+                                {% if p.offers_pickup %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                    <i class="bi bi-truck me-1"></i> Offers Pickup
+                                </span>
+                                {% else %}
+                                <span class="badge bg-light text-muted border">Drop-off</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.is_active %}
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if p.verification_status == 'Verified' %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle">Verified</span>
+                                {% else %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Demo / Sample</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-end">
+                                <!-- Toggle Active Status -->
+                                <form method="POST" action="{{ url_for('admin_toggle_provider_status', provider_id=p.id) }}" style="display:inline;">
+                                    {% if p.is_active %}
+                                    <button type="submit" class="btn btn-sm btn-outline-warning py-1 px-2" title="Deactivate Provider">
+                                        <i class="bi bi-pause"></i>
+                                    </button>
+                                    {% else %}
+                                    <button type="submit" class="btn btn-sm btn-outline-success py-1 px-2" title="Activate Provider">
+                                        <i class="bi bi-play"></i>
+                                    </button>
+                                    {% endif %}
+                                </form>
+
+                                <!-- Delete Provider -->
+                                <form method="POST" action="{{ url_for('admin_delete_provider', provider_id=p.id) }}" onsubmit="return confirm('Delete provider \'{{ p.name }}\'?');" style="display:inline;" class="ms-1">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger py-1 px-2" title="Delete Provider">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Add New Service Provider -->
+<div class="modal fade" id="addProviderModal" tabindex="-1" aria-labelledby="addProviderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content eco-card border-0">
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title fw-bold" id="addProviderModalLabel">
+                    <i class="bi bi-building me-1 text-success"></i> Add New Service Provider
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="POST" action="{{ url_for('admin_add_provider') }}">
+                <div class="modal-body p-4">
+                    <div class="row g-3">
+                        <div class="col-md-7">
+                            <label class="form-label small fw-bold">Provider / Facility Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="name" placeholder="e.g. CleanEarth E-Waste Solutions" required>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label small fw-bold">Service Category <span class="text-danger">*</span></label>
+                            <select class="form-select" name="category_id" required>
+                                {% for cat in categories %}
+                                <option value="{{ cat.id }}">{{ cat.category_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Phone Number <span class="text-danger">*</span></label>
+                            <input type="tel" class="form-control" name="phone" placeholder="+91 98450 12345" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Contact Email</label>
+                            <input type="email" class="form-control" name="email" placeholder="contact@example.com">
+                        </div>
+
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Street Address <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="address" placeholder="e.g. 104 Industrial Estate, Whitefield" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">City <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" name="city" placeholder="e.g. Bengaluru" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Latitude (-90 to 90) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.000001" class="form-control" name="latitude" placeholder="12.971598" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Longitude (-180 to 180) <span class="text-danger">*</span></label>
+                            <input type="number" step="0.000001" class="form-control" name="longitude" placeholder="77.594566" required>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Doorstep Pickup Service</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox" id="offers_pickup" name="offers_pickup" value="1" checked>
+                                <label class="form-check-label" for="offers_pickup">Offers Doorstep Collection</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Verification Status</label>
+                            <select class="form-select" name="verification_status">
+                                <option value="Verified">Verified Authorized Partner</option>
+                                <option value="Demo / Sample" selected>Demo / Sample Record</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-eco-primary">
+                        <i class="bi bi-plus-circle me-1"></i> Create Provider Record
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

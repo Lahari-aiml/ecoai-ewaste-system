@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Classification Result: {{ prediction.category_name }} – EcoAI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <!-- Hero Result Banner -->
+            <div class="result-hero-box result-box-{{ prediction.category_name|lower }} shadow-lg">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <span class="badge bg-white text-dark px-3 py-1 rounded-pill fw-bold text-uppercase small mb-2 d-inline-block">
+                            <i class="bi bi-stars text-warning me-1"></i> AI Classification Outcome
+                        </span>
+                        <h1 class="display-5 fw-bold mb-1">{{ prediction.category_name }}</h1>
+                        <p class="mb-0 text-white-50">
+                            Recommended circular disposition determined by NLP & Deep Neural Network ensemble.
+                        </p>
+                    </div>
+                    <div class="text-md-end bg-black bg-opacity-25 p-3 rounded-3">
+                        <div class="small text-white-50 fw-semibold text-uppercase">Ensemble Confidence</div>
+                        <div class="display-6 fw-bold text-white">{{ (prediction.confidence_score * 100)|round(1) }}%</div>
+                        <div class="confidence-meter mt-1">
+                            <div class="confidence-fill" style="width: {{ (prediction.confidence_score * 100)|round(1) }}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Item Submitted Summary -->
+            <div class="eco-card p-4 mb-4 shadow-sm">
+                <h6 class="fw-bold text-muted text-uppercase small mb-2">Submitted Electronic Item Description</h6>
+                <div class="p-3 bg-light rounded-3 border fst-italic text-dark">
+                    "{{ prediction.input_text }}"
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-3 text-muted small">
+                    <div><i class="bi bi-calendar3 me-1"></i> Analyzed on: {{ prediction.created_at }}</div>
+                    <div><i class="bi bi-cpu me-1"></i> Model: {{ prediction.model_used }}</div>
+                </div>
+            </div>
+
+            <!-- Detailed Recommendation & Action Steps -->
+            {% if recommendation %}
+            <div class="eco-card p-4 mb-4 shadow-sm">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="p-2 rounded-circle bg-success-subtle text-success">
+                        <i class="bi {{ recommendation.icon }} fs-4"></i>
+                    </div>
+                    <h4 class="fw-bold mb-0">Recommended Disposition Strategy</h4>
+                </div>
+
+                <p class="lead fs-6 text-dark mb-4">
+                    {{ recommendation.recommendation_text }}
+                </p>
+
+                <!-- Action Steps -->
+                <h5 class="fw-bold mb-3"><i class="bi bi-list-check text-primary me-2"></i>Actionable Instructions</h5>
+                <div class="list-group list-group-flush mb-4">
+                    {% for step in recommendation.steps %}
+                    <div class="list-group-item px-0 py-2 d-flex align-items-start gap-2 border-0">
+                        <i class="bi bi-check-circle-fill text-success fs-5 mt-n1"></i>
+                        <span class="text-secondary">{{ step }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Safety Guidelines Alert -->
+                {% if recommendation.safety_guidelines %}
+                <div class="alert alert-warning d-flex align-items-start gap-3 mb-0" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill text-warning fs-4"></i>
+                    <div>
+                        <h6 class="alert-heading fw-bold mb-1">Safety & Environmental Warning</h6>
+                        <p class="small mb-0 text-dark">{{ recommendation.safety_guidelines }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Dual AI Model Comparison (Academic Demonstration) -->
+            <div class="eco-card p-4 mb-4 shadow-sm">
+                <h5 class="fw-bold mb-3"><i class="bi bi-diagram-3 text-info me-2"></i>AI Architecture Diagnostics</h5>
+                <p class="small text-muted mb-3">Comparison between individual classifier inferences for this item:</p>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark"><i class="bi bi-chat-left-text me-1 text-primary"></i> NLP Classifier</span>
+                                <span class="badge bg-primary-subtle text-primary border">{{ prediction.nlp_prediction or 'Processed' }}</span>
+                            </div>
+                            <div class="small text-muted">TF-IDF Vectorizer + Calibrated Classifier</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="p-3 bg-light rounded-3 border">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="fw-bold text-dark"><i class="bi bi-node-plus me-1 text-success"></i> Deep Learning</span>
+                                <span class="badge bg-success-subtle text-success border">{{ prediction.dl_prediction or 'Processed' }}</span>
+                            </div>
+                            <div class="small text-muted">Dense Neural Network (128-64 MLP with Softmax)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Call to Actions -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <a href="{{ url_for('classify') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Classify Another Device
+                </a>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('providers', category_id=prediction.predicted_category_id, prediction_id=prediction.id) }}" class="btn btn-eco-primary btn-lg">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Find Nearby Matching Providers &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

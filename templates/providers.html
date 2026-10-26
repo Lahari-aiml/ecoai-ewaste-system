@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Nearby E-Waste Service Providers – EcoAI Map{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <h2 class="fw-bold mb-1">Nearby Service Providers</h2>
+            <p class="text-muted mb-0 small">
+                Locate authorized local repair centers, reuse hubs, and certified e-waste recyclers.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-eco-primary btn-sm" id="btn-get-location">
+                <i class="bi bi-crosshair me-1"></i> Detect My GPS Location
+            </button>
+        </div>
+    </div>
+
+    <!-- Location Status Box (Dynamic feedback) -->
+    <div id="location-status"></div>
+
+    <!-- Filter & Search Controls Form -->
+    <div class="eco-card p-3 mb-4 shadow-sm bg-white">
+        <form method="GET" action="{{ url_for('providers') }}" id="provider-search-form">
+            <input type="hidden" name="lat" id="user-lat" value="{{ search_lat or '' }}">
+            <input type="hidden" name="lon" id="user-lon" value="{{ search_lon or '' }}">
+            {% if prediction_id %}
+            <input type="hidden" name="prediction_id" value="{{ prediction_id }}">
+            {% endif %}
+
+            <div class="row g-3 align-items-end">
+                <!-- City Selector Fallback -->
+                <div class="col-md-4">
+                    <label for="city-select" class="form-label small fw-semibold">City / Metro Region</label>
+                    <select class="form-select form-select-sm" id="city-select" name="city">
+                        <option value="">-- Choose or use GPS --</option>
+                        <option value="Bengaluru" {% if selected_city == 'bengaluru' %}selected{% endif %}>Bengaluru (Bangalore)</option>
+                        <option value="Hyderabad" {% if selected_city == 'hyderabad' %}selected{% endif %}>Hyderabad</option>
+                        <option value="Delhi" {% if selected_city == 'delhi' %}selected{% endif %}>Delhi NCR</option>
+                        <option value="Mumbai" {% if selected_city == 'mumbai' %}selected{% endif %}>Mumbai</option>
+                        <option value="Chennai" {% if selected_city == 'chennai' %}selected{% endif %}>Chennai</option>
+                        <option value="Pune" {% if selected_city == 'pune' %}selected{% endif %}>Pune</option>
+                        <option value="Kolkata" {% if selected_city == 'kolkata' %}selected{% endif %}>Kolkata</option>
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="col-md-3">
+                    <label for="category-select" class="form-label small fw-semibold">Service Category</label>
+                    <select class="form-select form-select-sm" id="category-select" name="category_id">
+                        <option value="">All Categories</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if selected_category_id == cat.id %}selected{% endif %}>
+                            {{ cat.category_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Radius Filter -->
+                <div class="col-md-3">
+                    <label for="radius-select" class="form-label small fw-semibold">Search Radius (km)</label>
+                    <select class="form-select form-select-sm" id="radius-select" name="radius">
+                        <option value="15" {% if radius_km == 15 %}selected{% endif %}>Within 15 km</option>
+                        <option value="25" {% if radius_km == 25 %}selected{% endif %}>Within 25 km (Default)</option>
+                        <option value="50" {% if radius_km == 50 %}selected{% endif %}>Within 50 km (Expanded)</option>
+                        <option value="100" {% if radius_km == 100 %}selected{% endif %}>Within 100 km (Wide)</option>
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-eco-primary btn-sm w-100">
+                        <i class="bi bi-search me-1"></i> Search
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active Filter Indicators -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 small text-muted">
+        <div>
+            Showing <strong>{{ providers|length }}</strong> matching providers
+            {% if search_lat and search_lon %}
+            within <strong>{{ radius_km }} km</strong> of current coordinates
+            {% elif selected_city %}
+            around <strong>{{ selected_city|capitalize }}</strong>
+            {% endif %}
+        </div>
+        <div>
+            <span class="badge bg-secondary-subtle text-secondary border">Demo records clearly identified</span>
+        </div>
+    </div>
+
+    <!-- Providers JSON Data Container for Testing and Client Scripts -->
+    <div id="providers-data" style="display:none;" data-providers='{{ providers|tojson|safe }}'></div>
+
+    <!-- Main Providers & Map Layout -->
+    <div class="row g-4">
+        <!-- Interactive Map (Left) -->
+        <div class="col-lg-7">
+            <div class="eco-card p-2 shadow-sm">
+                <div id="map"
+                     data-lat="{{ search_lat if search_lat is not none else '' }}"
+                     data-lon="{{ search_lon if search_lon is not none else '' }}"
+                     data-radius="{{ radius_km|default(25) }}"></div>
+                <div class="d-flex justify-content-between align-items-center px-3 py-2 small text-muted">
+                    <div class="d-flex align-items-center gap-3">
+                        <span><i class="bi bi-circle-fill text-primary"></i> Repair</span>
+                        <span><i class="bi bi-circle-fill text-success"></i> Reuse</span>
+                        <span><i class="bi bi-circle-fill text-danger"></i> Recycle</span>
+                    </div>
+                    <span>Powered by OpenStreetMap & Leaflet</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Provider Listings (Right) -->
+        <div class="col-lg-5">
+            <div style="max-height: 520px; overflow-y: auto; padding-right: 4px;">
+                {% if providers %}
+                    {% for p in providers %}
+                    <div class="provider-item" onclick="focusProviderOnMap({{ p.id }}, {{ p.latitude }}, {{ p.longitude }})">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <h6 class="fw-bold mb-0 text-dark">{{ p.name }}</h6>
+                            <span class="badge-cat-{{ p.category_name|lower }}">
+                                {{ p.category_name }}
+                            </span>
+                        </div>
+
+                        <div class="small text-muted mb-1">
+                            <i class="bi bi-geo-alt"></i> {{ p.address }}, {{ p.city }}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center small my-2">
+                            <div class="text-primary fw-semibold">
+                                <i class="bi bi-telephone"></i> {{ p.phone }}
+                            </div>
+                            {% if p.distance_formatted %}
+                            <div class="badge bg-light text-dark border">
+                                <i class="bi bi-signpost-2 me-1"></i> {{ p.distance_formatted }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                            <div>
+                                {% if p.offers_pickup %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 0.75rem;">
+                                    <i class="bi bi-truck me-1"></i> Doorstep Pickup Available
+                                </span>
+                                {% else %}
+                                <span class="badge bg-light text-muted border" style="font-size: 0.75rem;">
+                                    Drop-off Only
+                                </span>
+                                {% endif %}
+                                <span class="badge bg-warning-subtle text-warning border border-warning-subtle ms-1" style="font-size: 0.7rem;">
+                                    {{ p.verification_status }}
+                                </span>
+                            </div>
+
+                            {% if p.offers_pickup %}
+                            <a href="{{ url_for('request_pickup', provider_id=p.id, prediction_id=prediction_id) }}" class="btn btn-sm btn-eco-primary py-1 px-2" style="font-size: 0.8rem;">
+                                <i class="bi bi-truck"></i> Request Pickup
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="eco-card p-4 text-center text-muted">
+                        <i class="bi bi-geo-alt-slash fs-1 text-secondary opacity-50 mb-2"></i>
+                        <h5>No Providers Found</h5>
+                        <p class="small mb-3">No matching service providers were found within {{ radius_km }} km of your location.</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{{ url_for('providers', city=selected_city or 'bengaluru', radius=50, category_id=selected_category_id) }}" class="btn btn-sm btn-eco-outline">
+                                <i class="bi bi-arrows-angle-expand me-1"></i> Expand to 50 km
+                            </a>
+                            <a href="{{ url_for('providers', city=selected_city or 'bengaluru', radius=100, category_id=selected_category_id) }}" class="btn btn-sm btn-eco-outline">
+                                <i class="bi bi-arrows-angle-expand me-1"></i> Expand to 100 km
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script id="providers-data" type="application/json">
+{{ providers|tojson|safe }}
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const mapEl = document.getElementById('map');
+    const userLat = (mapEl && mapEl.dataset.lat) ? parseFloat(mapEl.dataset.lat) : null;
+    const userLon = (mapEl && mapEl.dataset.lon) ? parseFloat(mapEl.dataset.lon) : null;
+    const radiusKm = (mapEl && mapEl.dataset.radius) ? parseFloat(mapEl.dataset.radius) : 25;
+
+    let providers = [];
+    const providersEl = document.getElementById('providers-data');
+    if (providersEl && providersEl.textContent.trim()) {
+        try {
+            providers = JSON.parse(providersEl.textContent);
+        } catch (e) {
+            console.error('Failed to parse providers data:', e);
+        }
+    }
+
+    initProvidersMap('map', userLat, userLon, providers, radiusKm);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}E-Waste Categories & Recommendations – EcoAI Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+        <div>
+            <div class="d-flex align-items-center gap-2">
+                <a href="{{ url_for('admin_dashboard') }}" class="text-decoration-none small">&larr; Admin Dashboard</a>
+            </div>
+            <h2 class="fw-bold mb-0 mt-1">Categories & Advisory Directives</h2>
+        </div>
+        <div class="small text-muted">
+            Three-Tier Circular Economy Structure
+        </div>
+    </div>
+
+    <!-- Category Cards with Edit Forms -->
+    <div class="row g-4">
+        {% for cat in categories_data %}
+        <div class="col-lg-4">
+            <div class="eco-card h-100 shadow-sm d-flex flex-column justify-content-between">
+                <div>
+                    <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                        <span class="badge-cat-{{ cat.category_name|lower }}">
+                            <i class="bi {{ cat.icon }} me-1"></i> {{ cat.category_name }}
+                        </span>
+                        <span class="small text-muted">ID: #{{ cat.category_id }}</span>
+                    </div>
+
+                    <div class="p-3">
+                        <form method="POST" action="{{ url_for('admin_update_category', category_id=cat.category_id) }}">
+                            <!-- Category Description -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Framework Definition</label>
+                                <textarea class="form-control form-control-sm" name="cat_description" rows="2" required>{{ cat.description }}</textarea>
+                            </div>
+
+                            <!-- Recommendation Text -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Primary Recommendation Text</label>
+                                <textarea class="form-control form-control-sm" name="recommendation_text" rows="3" required>{{ cat.recommendation_text }}</textarea>
+                            </div>
+
+                            <!-- Instructions -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Actionable Instructions (One step per line)</label>
+                                <textarea class="form-control form-control-sm" name="instructions" rows="5" required>{{ cat.instructions_raw }}</textarea>
+                            </div>
+
+                            <!-- Safety Guidelines -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-bold">Safety & Environmental Warning</label>
+                                <textarea class="form-control form-control-sm" name="safety_guidelines" rows="3">{{ cat.safety_guidelines }}</textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-sm btn-eco-primary w-100">
+                                <i class="bi bi-save me-1"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

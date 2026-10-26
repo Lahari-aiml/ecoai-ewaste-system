@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+{% block title %}Request Doorstep Pickup – EcoAI{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="eco-card p-4 p-md-5 shadow-sm">
+                <!-- Header -->
+                <div class="d-flex align-items-center gap-3 mb-4 pb-3 border-bottom">
+                    <div class="p-3 rounded-circle bg-success-subtle text-success">
+                        <i class="bi bi-truck fs-2"></i>
+                    </div>
+                    <div>
+                        <h2 class="fw-bold mb-1">Schedule Doorstep Pickup</h2>
+                        <p class="text-muted mb-0 small">
+                            An authorized partner will arrive at your address to collect your e-waste for responsible handling.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Provider Summary Card -->
+                <div class="p-3 rounded-3 bg-light border mb-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="badge bg-secondary-subtle text-secondary small text-uppercase fw-bold">Selected Partner</span>
+                            <h5 class="fw-bold text-dark mt-1 mb-0">{{ provider.name }}</h5>
+                        </div>
+                        <span class="badge-cat-{{ provider.category_name|lower }}">
+                            {{ provider.category_name }}
+                        </span>
+                    </div>
+                    <div class="small text-muted">
+                        <div><i class="bi bi-geo-alt me-1"></i> {{ provider.address }}, {{ provider.city }}</div>
+                        <div><i class="bi bi-telephone me-1"></i> {{ provider.phone }}</div>
+                    </div>
+                </div>
+
+                <!-- Associated Item / Classification -->
+                {% if prediction %}
+                <div class="p-3 rounded-3 bg-success-subtle bg-opacity-25 border border-success-subtle mb-4">
+                    <div class="small fw-bold text-success text-uppercase mb-1">
+                        <i class="bi bi-cpu me-1"></i> Linked Classified Device
+                    </div>
+                    <div class="small text-dark fst-italic">
+                        "{{ prediction.input_text }}"
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Pickup Form -->
+                <form method="POST" action="{{ url_for('submit_pickup_request') }}">
+                    <input type="hidden" name="provider_id" value="{{ provider.id }}">
+                    {% if prediction %}
+                    <input type="hidden" name="prediction_id" value="{{ prediction.id }}">
+                    {% endif %}
+
+                    <!-- Pickup Address -->
+                    <div class="mb-3">
+                        <label for="address" class="form-label">
+                            Full Pickup Address <span class="text-danger">*</span>
+                        </label>
+                        <textarea class="form-control" id="address" name="address" rows="3" placeholder="Flat / House No., Building Name, Street, Landmark, City & Pincode" required>{{ request.form.get('address', '') }}</textarea>
+                        <div class="form-text small text-muted">
+                            <i class="bi bi-shield-check me-1"></i> Used strictly for doorstep logistics; never shared publicly.
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <!-- Contact Phone -->
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">
+                                Contact Phone Number <span class="text-danger">*</span>
+                            </label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="+91 98765 43210" required value="{{ request.form.get('phone', '') }}">
+                            <div class="form-text small text-muted">For pickup driver coordination.</div>
+                        </div>
+
+                        <!-- Preferred Date -->
+                        <div class="col-md-6">
+                            <label for="preferred_date" class="form-label">
+                                Preferred Collection Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="preferred_date" name="preferred_date" min="{{ min_date }}" required value="{{ request.form.get('preferred_date', min_date) }}">
+                            <div class="form-text small text-muted">Standard collection between 09:00 AM - 06:00 PM.</div>
+                        </div>
+                    </div>
+
+                    <!-- Instructions -->
+                    <div class="mb-4">
+                        <label for="instructions" class="form-label">
+                            Special Instructions or Gate Access Notes <span class="text-muted">(Optional)</span>
+                        </label>
+                        <input type="text" class="form-control" id="instructions" name="instructions" placeholder="e.g. Ring flat 402, heavy box, call before arriving" value="{{ request.form.get('instructions', '') }}">
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center pt-2">
+                        <a href="{{ url_for('providers') }}" class="btn btn-outline-secondary">
+                            &larr; Back to Providers
+                        </a>
+                        <button type="submit" class="btn btn-eco-primary btn-lg">
+                            <i class="bi bi-check-circle me-1"></i> Confirm & Book Pickup
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
